@@ -142,7 +142,7 @@ def main():
         print(f"{c.GRAY}    Avg/item:    {c.RESET}{tokens/len(data):.1f}")
         print()
 
-    print(f"{c.GRAY}[SUMMARY]{c.RESET} Multi-turn: {c.WHITE}{multi_turn_total_items:,}{c.RESET} items, {c.WHITE}{multi_turn_total_tokens:,}{c.RESET} tokens")
+    print(f"{c.GRAY}[SUMMARY]{c.RESET} Multi-turn: {c.WHITE}{multi_turn_total_items:,}{c.RESET} samples, {c.WHITE}{multi_turn_total_tokens:,}{c.RESET} tokens")
     print()
 
     # Process Single-turn datasets
@@ -177,7 +177,7 @@ def main():
         print(f"{c.GRAY}    Avg/item:    {c.RESET}{tokens/len(data):.1f}")
         print()
 
-    print(f"{c.GRAY}[SUMMARY]{c.RESET} Single-turn: {c.WHITE}{single_turn_total_items:,}{c.RESET} items, {c.WHITE}{single_turn_total_tokens:,}{c.RESET} tokens")
+    print(f"{c.GRAY}[SUMMARY]{c.RESET} Single-turn: {c.WHITE}{single_turn_total_items:,}{c.RESET} samples, {c.WHITE}{single_turn_total_tokens:,}{c.RESET} tokens")
     print()
 
     # Overall statistics
@@ -187,10 +187,10 @@ def main():
     total_items = multi_turn_total_items + single_turn_total_items
     total_tokens = multi_turn_total_tokens + single_turn_total_tokens
 
-    print(f"{c.GRAY}  Multi-turn:  {c.RESET}{c.WHITE}{multi_turn_total_items:,}{c.RESET} items ({c.WHITE}{multi_turn_total_tokens:,}{c.RESET} tokens)")
-    print(f"{c.GRAY}  Single-turn: {c.RESET}{c.WHITE}{single_turn_total_items:,}{c.RESET} items ({c.WHITE}{single_turn_total_tokens:,}{c.RESET} tokens)")
-    print(f"{c.GRAY}  TOTAL:       {c.RESET}{c.BRIGHT_WHITE}{c.BOLD}{total_items:,}{c.RESET} items ({c.BRIGHT_WHITE}{c.BOLD}{total_tokens:,}{c.RESET} tokens)")
-    print(f"{c.GRAY}  Average:     {c.RESET}{total_tokens/total_items:.1f} tokens/item")
+    print(f"{c.GRAY}  Multi-turn:  {c.RESET}{c.WHITE}{multi_turn_total_items:,}{c.RESET} samples ({c.WHITE}{multi_turn_total_tokens:,}{c.RESET} tokens)")
+    print(f"{c.GRAY}  Single-turn: {c.RESET}{c.WHITE}{single_turn_total_items:,}{c.RESET} samples ({c.WHITE}{single_turn_total_tokens:,}{c.RESET} tokens)")
+    print(f"{c.GRAY}  TOTAL:       {c.RESET}{c.BRIGHT_WHITE}{c.BOLD}{total_items:,}{c.RESET} samples ({c.BRIGHT_WHITE}{c.BOLD}{total_tokens:,}{c.RESET} tokens)")
+    print(f"{c.GRAY}  Average:     {c.RESET}{total_tokens/total_items:.1f} tokens/sample")
     print()
 
     # Renumber IDs and create merged dataset
@@ -230,7 +230,7 @@ def main():
         })
 
         print(f"{c.GREEN}[✓]{c.RESET} {c.WHITE}{name}{c.RESET}")
-        print(f"{c.GRAY}    ID range:    {c.RESET}{start_id:04d} - {end_id:04d} ({len(data)} items)")
+        print(f"{c.GRAY}    ID range:    {c.RESET}{start_id:04d} - {end_id:04d} ({len(data)} samples)")
         print()
 
     # Save merged dataset
@@ -238,9 +238,17 @@ def main():
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(merged_data, f, ensure_ascii=False, indent=2)
 
+    # Save merged dataset in JSONL format
+    output_jsonl_file = 'dataset.jsonl'
+    with open(output_jsonl_file, 'w', encoding='utf-8') as f:
+        for item in merged_data:
+            f.write(json.dumps(item, ensure_ascii=False) + '\n')
+
     print(f"{c.GRAY}{'█' * 70}{c.RESET}")
     print(f"{c.GREEN}  [✓] Saved merged dataset to: {c.WHITE}{output_file}{c.RESET}")
-    print(f"{c.GRAY}      Total: {c.RESET}{c.WHITE}{len(merged_data):,}{c.RESET} items")
+    print(f"{c.GRAY}      Total: {c.RESET}{c.WHITE}{len(merged_data):,}{c.RESET} samples")
+    print(f"{c.GREEN}  [✓] Saved merged dataset to: {c.WHITE}{output_jsonl_file}{c.RESET}")
+    print(f"{c.GRAY}      Total: {c.RESET}{c.WHITE}{len(merged_data):,}{c.RESET} samples")
     print(f"{c.GRAY}{'█' * 70}{c.RESET}")
     print()
 
@@ -255,13 +263,13 @@ def main():
     stats_output = {
         'encoding': 'o200k_base',
         'summary': {
-            'total_items': total_items,
+            'total_samples': total_items,
             'total_tokens': total_tokens,
-            'multi_turn_items': multi_turn_total_items,
+            'multi_turn_samples': multi_turn_total_items,
             'multi_turn_tokens': multi_turn_total_tokens,
-            'single_turn_items': single_turn_total_items,
+            'single_turn_samples': single_turn_total_items,
             'single_turn_tokens': single_turn_total_tokens,
-            'avg_tokens_per_item': total_tokens / total_items
+            'avg_tokens_per_sample': total_tokens / total_items
         },
         'datasets': stats,
         'id_ranges': id_ranges
