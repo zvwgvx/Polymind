@@ -2,12 +2,29 @@ import json
 import tiktoken
 from pathlib import Path
 
+# ANSI Color Codes for Dark Theme
+class Colors:
+    RESET = '\033[0m'
+    BOLD = '\033[1m'
+    DIM = '\033[2m'
+
+    # Dark theme colors
+    BLACK = '\033[30m'
+    GRAY = '\033[90m'
+    WHITE = '\033[37m'
+    BRIGHT_WHITE = '\033[97m'
+
+    # Accent colors (muted for dark theme)
+    BLUE = '\033[34m'
+    CYAN = '\033[36m'
+    GREEN = '\033[32m'
+
 def count_tokens(text, encoding):
-    """Đếm số token trong text"""
+    """Count tokens in text"""
     return len(encoding.encode(text))
 
 def count_tokens_in_item(item, encoding):
-    """Đếm tổng số token trong 1 item (multi-turn hoặc single-turn)"""
+    """Count total tokens in one item (multi-turn or single-turn)"""
     total = 0
 
     # System prompt
@@ -35,11 +52,12 @@ def load_dataset(file_path):
 def main():
     # Initialize tiktoken with o200k_base encoding
     encoding = tiktoken.get_encoding('o200k_base')
+    c = Colors  # Shorthand
 
-    print("=" * 70)
-    print("📊 DATASET TOKEN COUNTER & MERGER")
-    print("=" * 70)
-    print(f"🔧 Encoding: o200k_base")
+    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
+    print(f"{c.BRIGHT_WHITE}{c.BOLD}  DATASET TOKEN COUNTER & MERGER{c.RESET}")
+    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
+    print(f"{c.GRAY}  Encoding: {c.WHITE}o200k_base{c.RESET}")
     print()
 
     # Define datasets
@@ -60,8 +78,8 @@ def main():
     stats = {}
 
     # Process Multi-turn datasets
-    print("📁 MULTI-TURN DATASETS")
-    print("-" * 70)
+    print(f"{c.CYAN}{c.BOLD}[MULTI-TURN DATASETS]{c.RESET}")
+    print(f"{c.GRAY}{'─' * 70}{c.RESET}")
 
     multi_turn_total_tokens = 0
     multi_turn_total_items = 0
@@ -85,18 +103,18 @@ def main():
         multi_turn_total_tokens += tokens
         multi_turn_total_items += len(data)
 
-        print(f"✓ {name}")
-        print(f"  Items: {len(data):,}")
-        print(f"  Tokens: {tokens:,}")
-        print(f"  Avg tokens/item: {tokens/len(data):.1f}")
+        print(f"{c.GREEN}[✓]{c.RESET} {c.WHITE}{name}{c.RESET}")
+        print(f"{c.GRAY}    Items:       {c.RESET}{len(data):,}")
+        print(f"{c.GRAY}    Tokens:      {c.RESET}{tokens:,}")
+        print(f"{c.GRAY}    Avg/item:    {c.RESET}{tokens/len(data):.1f}")
         print()
 
-    print(f"📊 Multi-turn TOTAL: {multi_turn_total_items:,} items, {multi_turn_total_tokens:,} tokens")
+    print(f"{c.GRAY}[SUMMARY]{c.RESET} Multi-turn: {c.WHITE}{multi_turn_total_items:,}{c.RESET} items, {c.WHITE}{multi_turn_total_tokens:,}{c.RESET} tokens")
     print()
 
     # Process Single-turn datasets
-    print("📁 SINGLE-TURN DATASETS")
-    print("-" * 70)
+    print(f"{c.CYAN}{c.BOLD}[SINGLE-TURN DATASETS]{c.RESET}")
+    print(f"{c.GRAY}{'─' * 70}{c.RESET}")
 
     single_turn_total_tokens = 0
     single_turn_total_items = 0
@@ -120,32 +138,32 @@ def main():
         single_turn_total_tokens += tokens
         single_turn_total_items += len(data)
 
-        print(f"✓ {name}")
-        print(f"  Items: {len(data):,}")
-        print(f"  Tokens: {tokens:,}")
-        print(f"  Avg tokens/item: {tokens/len(data):.1f}")
+        print(f"{c.GREEN}[✓]{c.RESET} {c.WHITE}{name}{c.RESET}")
+        print(f"{c.GRAY}    Items:       {c.RESET}{len(data):,}")
+        print(f"{c.GRAY}    Tokens:      {c.RESET}{tokens:,}")
+        print(f"{c.GRAY}    Avg/item:    {c.RESET}{tokens/len(data):.1f}")
         print()
 
-    print(f"📊 Single-turn TOTAL: {single_turn_total_items:,} items, {single_turn_total_tokens:,} tokens")
+    print(f"{c.GRAY}[SUMMARY]{c.RESET} Single-turn: {c.WHITE}{single_turn_total_items:,}{c.RESET} items, {c.WHITE}{single_turn_total_tokens:,}{c.RESET} tokens")
     print()
 
     # Overall statistics
-    print("=" * 70)
-    print("📊 TỔNG KẾT")
-    print("=" * 70)
+    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
+    print(f"{c.BRIGHT_WHITE}{c.BOLD}  OVERALL SUMMARY{c.RESET}")
+    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
     total_items = multi_turn_total_items + single_turn_total_items
     total_tokens = multi_turn_total_tokens + single_turn_total_tokens
 
-    print(f"Multi-turn:   {multi_turn_total_items:,} items ({multi_turn_total_tokens:,} tokens)")
-    print(f"Single-turn:  {single_turn_total_items:,} items ({single_turn_total_tokens:,} tokens)")
-    print(f"TOTAL:        {total_items:,} items ({total_tokens:,} tokens)")
-    print(f"Average:      {total_tokens/total_items:.1f} tokens/item")
+    print(f"{c.GRAY}  Multi-turn:  {c.RESET}{c.WHITE}{multi_turn_total_items:,}{c.RESET} items ({c.WHITE}{multi_turn_total_tokens:,}{c.RESET} tokens)")
+    print(f"{c.GRAY}  Single-turn: {c.RESET}{c.WHITE}{single_turn_total_items:,}{c.RESET} items ({c.WHITE}{single_turn_total_tokens:,}{c.RESET} tokens)")
+    print(f"{c.GRAY}  TOTAL:       {c.RESET}{c.BRIGHT_WHITE}{c.BOLD}{total_items:,}{c.RESET} items ({c.BRIGHT_WHITE}{c.BOLD}{total_tokens:,}{c.RESET} tokens)")
+    print(f"{c.GRAY}  Average:     {c.RESET}{total_tokens/total_items:.1f} tokens/item")
     print()
 
     # Renumber IDs and create merged dataset
-    print("=" * 70)
-    print("🔀 MERGING DATASETS")
-    print("=" * 70)
+    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
+    print(f"{c.BRIGHT_WHITE}{c.BOLD}  MERGING DATASETS{c.RESET}")
+    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
     print()
 
     merged_data = []
@@ -175,8 +193,8 @@ def main():
             'count': len(data)
         })
 
-        print(f"✓ {name}")
-        print(f"  ID range: {start_id:04d} - {end_id:04d} ({len(data)} items)")
+        print(f"{c.GREEN}[✓]{c.RESET} {c.WHITE}{name}{c.RESET}")
+        print(f"{c.GRAY}    ID range:    {c.RESET}{start_id:04d} - {end_id:04d} ({len(data)} items)")
         print()
 
     # Save merged dataset
@@ -184,18 +202,18 @@ def main():
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(merged_data, f, ensure_ascii=False, indent=2)
 
-    print("=" * 70)
-    print(f"✅ Đã lưu merged dataset vào: {output_file}")
-    print(f"📊 Tổng cộng: {len(merged_data):,} items")
-    print("=" * 70)
+    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
+    print(f"{c.GREEN}  [✓] Saved merged dataset to: {c.WHITE}{output_file}{c.RESET}")
+    print(f"{c.GRAY}      Total: {c.RESET}{c.WHITE}{len(merged_data):,}{c.RESET} items")
+    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
     print()
 
     # Print ID mapping summary
-    print("📋 ID MAPPING SUMMARY:")
-    print("-" * 70)
+    print(f"{c.CYAN}{c.BOLD}[ID MAPPING SUMMARY]{c.RESET}")
+    print(f"{c.GRAY}{'─' * 70}{c.RESET}")
     for range_info in id_ranges:
-        print(f"{range_info['name']:40s} → IDs {range_info['start']:04d}-{range_info['end']:04d}")
-    print("=" * 70)
+        print(f"{c.WHITE}{range_info['name']:40s}{c.RESET} {c.GRAY}→{c.RESET} IDs {c.WHITE}{range_info['start']:04d}{c.RESET}-{c.WHITE}{range_info['end']:04d}{c.RESET}")
+    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
 
     # Save statistics to file
     stats_output = {
@@ -217,7 +235,7 @@ def main():
         json.dump(stats_output, f, ensure_ascii=False, indent=2)
 
     print()
-    print("✅ Đã lưu thống kê vào: dataset_stats.json")
+    print(f"{c.GREEN}[✓] Saved statistics to: {c.WHITE}dataset_stats.json{c.RESET}")
     print()
 
 if __name__ == '__main__':
