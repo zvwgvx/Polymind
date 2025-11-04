@@ -1,18 +1,18 @@
 {
   "encoding": "o200k_base",
   "summary": {
-    "total_items": 967,
-    "total_tokens": 51515,
-    "multi_turn_items": 285,
-    "multi_turn_tokens": 51515,
+    "total_items": 1017,
+    "total_tokens": 98832,
+    "multi_turn_items": 335,
+    "multi_turn_tokens": 71605,
     "single_turn_items": 682,
-    "single_turn_tokens": 0,
-    "avg_tokens_per_item": 53.27300930713547
+    "single_turn_tokens": 27227,
+    "avg_tokens_per_item": 97.17994100294985
   },
   "datasets": {
     "Multi-turn Daily Banter": {
-      "items": 150,
-      "tokens": 20976,
+      "items": 200,
+      "tokens": 41066,
       "source_file": "dataset/multi-turn/01_daily_banter.json"
     },
     "Multi-turn Sensitive Topics": {
@@ -27,17 +27,17 @@
     },
     "Single-turn Daily Banter": {
       "items": 482,
-      "tokens": 0,
+      "tokens": 18201,
       "source_file": "dataset/single-turn/01_daily_banter.json"
     },
     "Single-turn Sensitive Topics": {
       "items": 100,
-      "tokens": 0,
+      "tokens": 5008,
       "source_file": "dataset/single-turn/02_sensitive_topics.json"
     },
     "Single-turn Roleplay": {
       "items": 100,
-      "tokens": 0,
+      "tokens": 4018,
       "source_file": "dataset/single-turn/03_roleplay.json"
     }
   },
@@ -45,37 +45,37 @@
     {
       "name": "Multi-turn Daily Banter",
       "start": 1,
-      "end": 150,
-      "count": 150
+      "end": 200,
+      "count": 200
     },
     {
       "name": "Multi-turn Sensitive Topics",
-      "start": 151,
-      "end": 225,
+      "start": 201,
+      "end": 275,
       "count": 75
     },
     {
       "name": "Multi-turn Roleplay",
-      "start": 226,
-      "end": 285,
+      "start": 276,
+      "end": 335,
       "count": 60
     },
     {
       "name": "Single-turn Daily Banter",
-      "start": 286,
-      "end": 767,
+      "start": 336,
+      "end": 817,
       "count": 482
     },
     {
       "name": "Single-turn Sensitive Topics",
-      "start": 768,
-      "end": 867,
+      "start": 818,
+      "end": 917,
       "count": 100
     },
     {
       "name": "Single-turn Roleplay",
-      "start": 868,
-      "end": 967,
+      "start": 918,
+      "end": 1017,
       "count": 100
     }
   ]

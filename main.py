@@ -31,23 +31,56 @@ def count_tokens_in_item(item, encoding):
     if 'system' in item:
         total += count_tokens(item['system'], encoding)
 
-    # Multi-turn conversations
+    # Multi-turn conversations (format: conversations array with role/content)
     if 'conversations' in item:
         for conv in item['conversations']:
             total += count_tokens(conv['content'], encoding)
 
-    # Single-turn user/assistant
+    # Single-turn user/assistant (format: user/assistant fields)
     if 'user' in item:
         total += count_tokens(item['user'], encoding)
     if 'assistant' in item:
         total += count_tokens(item['assistant'], encoding)
 
+    # New format: messages array (role/content format used in single-turn datasets)
+    if 'messages' in item:
+        for message in item['messages']:
+            total += count_tokens(message['content'], encoding)
+
     return total
 
 def load_dataset(file_path):
-    """Load JSON dataset"""
-    with open(file_path, 'r', encoding='utf-8') as f:
-        return json.load(f)
+    """Load JSON dataset with error handling"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+            try:
+                return json.loads(content)
+            except json.JSONDecodeError as e:
+                # Get context around the error
+                lines = content.split('\n')
+                start = max(0, e.lineno - 3)
+                end = min(len(lines), e.lineno + 3)
+                context = '\n'.join(f"{i+1}: {line}" for i, line in enumerate(lines[start:end], start))
+                print(f"\nJSON Error near line {e.lineno}, column {e.colno}:")
+                print(context)
+                print("\nTrying to fix common JSON issues...")
+
+                # Try fixing common JSON issues
+                # 1. Remove trailing commas
+                fixed = content.replace(',]', ']').replace(',}', '}')
+                # 2. Add missing closing brackets/braces
+                if content.count('[') > content.count(']'):
+                    fixed += ']' * (content.count('[') - content.count(']'))
+                if content.count('{') > content.count('}'):
+                    fixed += '}' * (content.count('{') - content.count('}'))
+
+                try:
+                    return json.loads(fixed)
+                except:
+                    raise Exception(f"Failed to parse JSON in {file_path}. Original error: {str(e)}")
+    except Exception as e:
+        raise Exception(f"Error loading {file_path}: {str(e)}")
 
 def main():
     # Initialize tiktoken with o200k_base encoding
@@ -179,6 +212,9 @@ def main():
 
         for item in data:
             new_item = item.copy()
+            # Store original ID if exists
+            if 'id' in item:
+                new_item['_original_id'] = item['id']
             # Renumber ID
             new_item['id'] = f"{current_id:04d}"
             new_item['_source'] = name
