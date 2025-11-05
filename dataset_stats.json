@@ -1,18 +1,18 @@
 {
   "encoding": "o200k_base",
   "summary": {
-    "total_samples": 1617,
-    "total_tokens": 186228,
-    "multi_turn_samples": 935,
-    "multi_turn_tokens": 159001,
+    "total_samples": 2017,
+    "total_tokens": 235329,
+    "multi_turn_samples": 1335,
+    "multi_turn_tokens": 208102,
     "single_turn_samples": 682,
     "single_turn_tokens": 27227,
-    "avg_tokens_per_sample": 115.16883116883118
+    "avg_tokens_per_sample": 116.67278135845315
   },
   "datasets": {
     "Multi-turn Daily Banter": {
-      "items": 800,
-      "tokens": 128462,
+      "items": 1200,
+      "tokens": 177563,
       "source_file": "dataset/multi-turn/01_daily_banter.json"
     },
     "Multi-turn Sensitive Topics": {
@@ -45,37 +45,37 @@
     {
       "name": "Multi-turn Daily Banter",
       "start": 1,
-      "end": 800,
-      "count": 800
+      "end": 1200,
+      "count": 1200
     },
     {
       "name": "Multi-turn Sensitive Topics",
-      "start": 801,
-      "end": 875,
+      "start": 1201,
+      "end": 1275,
       "count": 75
     },
     {
       "name": "Multi-turn Roleplay",
-      "start": 876,
-      "end": 935,
+      "start": 1276,
+      "end": 1335,
       "count": 60
     },
     {
       "name": "Single-turn Daily Banter",
-      "start": 936,
-      "end": 1417,
+      "start": 1336,
+      "end": 1817,
       "count": 482
     },
     {
       "name": "Single-turn Sensitive Topics",
-      "start": 1418,
-      "end": 1517,
+      "start": 1818,
+      "end": 1917,
       "count": 100
     },
     {
       "name": "Single-turn Roleplay",
-      "start": 1518,
-      "end": 1617,
+      "start": 1918,
+      "end": 2017,
       "count": 100
     }
   ]
