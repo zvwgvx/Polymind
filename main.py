@@ -87,9 +87,9 @@ def main():
     encoding = tiktoken.get_encoding('o200k_base')
     c = Colors  # Shorthand
 
-    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
+    print(f"{c.GRAY}{'█' * 60}{c.RESET}")
     print(f"{c.BRIGHT_WHITE}{c.BOLD}  DATASET TOKEN COUNTER & MERGER{c.RESET}")
-    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
+    print(f"{c.GRAY}{'█' * 60}{c.RESET}")
     print(f"{c.GRAY}  Encoding: {c.WHITE}o200k_base{c.RESET}")
     print()
 
@@ -181,9 +181,9 @@ def main():
     print()
 
     # Overall statistics
-    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
+    print(f"{c.GRAY}{'█' * 60}{c.RESET}")
     print(f"{c.BRIGHT_WHITE}{c.BOLD}  OVERALL SUMMARY{c.RESET}")
-    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
+    print(f"{c.GRAY}{'█' * 60}{c.RESET}")
     total_items = multi_turn_total_items + single_turn_total_items
     total_tokens = multi_turn_total_tokens + single_turn_total_tokens
 
@@ -194,9 +194,9 @@ def main():
     print()
 
     # Renumber IDs and create merged dataset
-    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
+    print(f"{c.GRAY}{'█' * 60}{c.RESET}")
     print(f"{c.BRIGHT_WHITE}{c.BOLD}  MERGING DATASETS{c.RESET}")
-    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
+    print(f"{c.GRAY}{'█' * 60}{c.RESET}")
     print()
 
     merged_data = []
@@ -244,12 +244,12 @@ def main():
         for item in merged_data:
             f.write(json.dumps(item, ensure_ascii=False) + '\n')
 
-    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
+    print(f"{c.GRAY}{'█' * 60}{c.RESET}")
     print(f"{c.GREEN}  [✓] Saved merged dataset to: {c.WHITE}{output_file}{c.RESET}")
     print(f"{c.GRAY}      Total: {c.RESET}{c.WHITE}{len(merged_data):,}{c.RESET} samples")
     print(f"{c.GREEN}  [✓] Saved merged dataset to: {c.WHITE}{output_jsonl_file}{c.RESET}")
     print(f"{c.GRAY}      Total: {c.RESET}{c.WHITE}{len(merged_data):,}{c.RESET} samples")
-    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
+    print(f"{c.GRAY}{'█' * 60}{c.RESET}")
     print()
 
     # Print ID mapping summary
@@ -257,7 +257,7 @@ def main():
     print(f"{c.GRAY}{'─' * 70}{c.RESET}")
     for range_info in id_ranges:
         print(f"{c.WHITE}{range_info['name']:40s}{c.RESET} {c.GRAY}→{c.RESET} IDs {c.WHITE}{range_info['start']:04d}{c.RESET}-{c.WHITE}{range_info['end']:04d}{c.RESET}")
-    print(f"{c.GRAY}{'█' * 70}{c.RESET}")
+    print(f"{c.GRAY}{'█' * 60}{c.RESET}")
 
     # Save statistics to file
     stats_output = {
