@@ -2,22 +2,22 @@
   "encoding": "o200k_base",
   "summary": {
     "total_samples": 2167,
-    "total_tokens": 265661,
+    "total_tokens": 265644,
     "multi_turn_samples": 1485,
-    "multi_turn_tokens": 238434,
+    "multi_turn_tokens": 238417,
     "single_turn_samples": 682,
     "single_turn_tokens": 27227,
-    "avg_tokens_per_sample": 122.59390862944163
+    "avg_tokens_per_sample": 122.58606368251039
   },
   "datasets": {
     "Multi-turn Daily Banter": {
       "items": 1200,
-      "tokens": 186739,
+      "tokens": 186721,
       "source_file": "dataset/multi-turn/01_daily_banter.json"
     },
     "Multi-turn Sensitive Topics": {
       "items": 225,
-      "tokens": 36693,
+      "tokens": 36694,
       "source_file": "dataset/multi-turn/02_sensitive_topics.json"
     },
     "Multi-turn Roleplay": {
