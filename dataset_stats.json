@@ -2,17 +2,17 @@
   "encoding": "o200k_base",
   "summary": {
     "total_samples": 2167,
-    "total_tokens": 265644,
+    "total_tokens": 265634,
     "multi_turn_samples": 1485,
-    "multi_turn_tokens": 238417,
+    "multi_turn_tokens": 238407,
     "single_turn_samples": 682,
     "single_turn_tokens": 27227,
-    "avg_tokens_per_sample": 122.58606368251039
+    "avg_tokens_per_sample": 122.58144900784495
   },
   "datasets": {
     "Multi-turn Daily Banter": {
       "items": 1200,
-      "tokens": 186721,
+      "tokens": 186711,
       "source_file": "dataset/multi-turn/01_daily_banter.json"
     },
     "Multi-turn Sensitive Topics": {
