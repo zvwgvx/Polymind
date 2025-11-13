@@ -1,1 +1,1 @@
-# Polymind
+# Polymind dataset
