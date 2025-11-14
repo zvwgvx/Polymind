@@ -1,6 +1,6 @@
 import json
-import tiktoken
 from pathlib import Path
+import re
 
 # ANSI Color Codes for Dark Theme
 class Colors:
@@ -18,36 +18,86 @@ class Colors:
     BLUE = '\033[34m'
     CYAN = '\033[36m'
     GREEN = '\033[32m'
+    YELLOW = '\033[33m'
+    RED = '\033[31m'
 
-def count_tokens(text, encoding):
-    """Count tokens in text"""
-    return len(encoding.encode(text))
+def count_tokens(text):
+    """
+    Estimate tokens in text (approximately 1 token = 4 characters for English/Vietnamese)
+    This is a rough approximation when tiktoken is unavailable
+    """
+    return len(text) // 4
 
-def count_tokens_in_item(item, encoding):
+def count_tokens_in_item(item):
     """Count total tokens in one item (multi-turn or single-turn)"""
     total = 0
 
     # System prompt
     if 'system' in item:
-        total += count_tokens(item['system'], encoding)
+        total += count_tokens(item['system'])
 
     # Multi-turn conversations (format: conversations array with role/content)
     if 'conversations' in item:
         for conv in item['conversations']:
-            total += count_tokens(conv['content'], encoding)
+            total += count_tokens(conv['content'])
 
     # Single-turn user/assistant (format: user/assistant fields)
     if 'user' in item:
-        total += count_tokens(item['user'], encoding)
+        total += count_tokens(item['user'])
     if 'assistant' in item:
-        total += count_tokens(item['assistant'], encoding)
+        total += count_tokens(item['assistant'])
 
     # New format: messages array (role/content format used in single-turn datasets)
     if 'messages' in item:
         for message in item['messages']:
-            total += count_tokens(message['content'], encoding)
+            total += count_tokens(message['content'])
 
     return total
+
+def extract_numeric_id(id_str):
+    """Extract numeric part from ID string"""
+    match = re.search(r'\d+', str(id_str))
+    return int(match.group()) if match else 0
+
+def renumber_and_sort_dataset(data, file_path):
+    """
+    Renumber IDs in dataset to be sequential without gaps or duplicates.
+    Returns (modified_data, was_modified)
+    """
+    if not data:
+        return data, False
+
+    # Extract prefix from first ID (e.g., "db_mt_" from "db_mt_001")
+    first_id = data[0].get('id', '')
+    prefix_match = re.match(r'^([a-zA-Z_]+)', str(first_id))
+    id_prefix = prefix_match.group(1) if prefix_match else ''
+
+    # Sort by numeric ID
+    data_sorted = sorted(data, key=lambda x: extract_numeric_id(x.get('id', 0)))
+
+    # Check if renumbering is needed
+    needs_renumber = False
+    for i, item in enumerate(data_sorted, 1):
+        current_numeric_id = extract_numeric_id(item.get('id', 0))
+        if current_numeric_id != i:
+            needs_renumber = True
+            break
+
+    # Also check for duplicates
+    ids = [extract_numeric_id(item.get('id', 0)) for item in data_sorted]
+    if len(ids) != len(set(ids)):
+        needs_renumber = True
+
+    if not needs_renumber:
+        return data, False
+
+    # Renumber
+    for i, item in enumerate(data_sorted, 1):
+        old_id = item.get('id', '')
+        new_id = f"{id_prefix}{i}"
+        item['id'] = new_id
+
+    return data_sorted, True
 
 def load_dataset(file_path):
     """Load JSON dataset with error handling"""
@@ -82,29 +132,77 @@ def load_dataset(file_path):
     except Exception as e:
         raise Exception(f"Error loading {file_path}: {str(e)}")
 
+def save_dataset(file_path, data):
+    """Save dataset back to file"""
+    with open(file_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+def discover_datasets(base_dir='dataset'):
+    """
+    Auto-discover all .json files in dataset/ directory.
+    Returns dict: {'multi-turn': [(path, name), ...], 'single-turn': [(path, name), ...]}
+    """
+    base_path = Path(base_dir)
+    datasets = {'multi-turn': [], 'single-turn': []}
+
+    for turn_type in ['multi-turn', 'single-turn']:
+        turn_dir = base_path / turn_type
+        if turn_dir.exists():
+            json_files = sorted(turn_dir.glob('*.json'))
+            for json_file in json_files:
+                # Generate friendly name from filename
+                name = json_file.stem.replace('_', ' ').title()
+                datasets[turn_type].append((str(json_file), f"{turn_type.title()} {name}"))
+
+    return datasets
+
 def main():
-    # Initialize tiktoken with o200k_base encoding
-    encoding = tiktoken.get_encoding('o200k_base')
+    # Simple token estimation (1 token ≈ 4 characters)
+    encoding_name = 'simple_estimate'
+
     c = Colors  # Shorthand
 
     print(f"{c.GRAY}{'█' * 60}{c.RESET}")
     print(f"{c.BRIGHT_WHITE}{c.BOLD}  DATASET TOKEN COUNTER & MERGER{c.RESET}")
     print(f"{c.GRAY}{'█' * 60}{c.RESET}")
-    print(f"{c.GRAY}  Encoding: {c.WHITE}o200k_base{c.RESET}")
+    print(f"{c.GRAY}  Encoding: {c.WHITE}{encoding_name}{c.RESET} {c.DIM}(~4 chars/token){c.RESET}")
     print()
 
-    # Define datasets
-    multi_turn_datasets = [
-        ('dataset/multi-turn/01_daily_banter.json', 'Multi-turn Daily Banter'),
-        ('dataset/multi-turn/02_sensitive_topics.json', 'Multi-turn Sensitive Topics'),
-        ('dataset/multi-turn/03_roleplay.json', 'Multi-turn Roleplay'),
-    ]
+    # Auto-discover datasets
+    print(f"{c.CYAN}{c.BOLD}[AUTO-DISCOVERING DATASETS]{c.RESET}")
+    print(f"{c.GRAY}{'─' * 70}{c.RESET}")
 
-    single_turn_datasets = [
-        ('dataset/single-turn/01_daily_banter.json', 'Single-turn Daily Banter'),
-        ('dataset/single-turn/02_sensitive_topics.json', 'Single-turn Sensitive Topics'),
-        ('dataset/single-turn/03_roleplay.json', 'Single-turn Roleplay'),
-    ]
+    discovered = discover_datasets()
+    multi_turn_datasets = discovered['multi-turn']
+    single_turn_datasets = discovered['single-turn']
+
+    print(f"{c.GREEN}[✓]{c.RESET} Found {c.WHITE}{len(multi_turn_datasets)}{c.RESET} multi-turn datasets")
+    print(f"{c.GREEN}[✓]{c.RESET} Found {c.WHITE}{len(single_turn_datasets)}{c.RESET} single-turn datasets")
+    print()
+
+    # Renumber phase
+    print(f"{c.CYAN}{c.BOLD}[RENUMBERING & SORTING IDs]{c.RESET}")
+    print(f"{c.GRAY}{'─' * 70}{c.RESET}")
+
+    all_datasets = multi_turn_datasets + single_turn_datasets
+    renumbered_count = 0
+
+    for file_path, name in all_datasets:
+        data = load_dataset(file_path)
+        data_sorted, was_modified = renumber_and_sort_dataset(data, file_path)
+
+        if was_modified:
+            save_dataset(file_path, data_sorted)
+            print(f"{c.YELLOW}[↻]{c.RESET} {c.WHITE}{name}{c.RESET}")
+            print(f"{c.GRAY}    Renumbered and sorted {len(data_sorted)} IDs{c.RESET}")
+            renumbered_count += 1
+        else:
+            print(f"{c.GREEN}[✓]{c.RESET} {c.WHITE}{name}{c.RESET} {c.GRAY}(IDs already sequential){c.RESET}")
+
+    print()
+    if renumbered_count > 0:
+        print(f"{c.YELLOW}[!]{c.RESET} Renumbered {c.WHITE}{renumbered_count}{c.RESET} dataset(s)")
+        print()
 
     # Statistics
     all_data = []
@@ -119,7 +217,7 @@ def main():
 
     for file_path, name in multi_turn_datasets:
         data = load_dataset(file_path)
-        tokens = sum(count_tokens_in_item(item, encoding) for item in data)
+        tokens = sum(count_tokens_in_item(item) for item in data)
 
         stats[name] = {
             'items': len(data),
@@ -154,7 +252,7 @@ def main():
 
     for file_path, name in single_turn_datasets:
         data = load_dataset(file_path)
-        tokens = sum(count_tokens_in_item(item, encoding) for item in data)
+        tokens = sum(count_tokens_in_item(item) for item in data)
 
         stats[name] = {
             'items': len(data),
@@ -261,7 +359,7 @@ def main():
 
     # Save statistics to file
     stats_output = {
-        'encoding': 'o200k_base',
+        'encoding': encoding_name,
         'summary': {
             'total_samples': total_items,
             'total_tokens': total_tokens,
