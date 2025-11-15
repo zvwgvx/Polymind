@@ -39205,7 +39205,7 @@
         "content": "m học\nonline\nhoặc tìm\nlớp vẽ\ngần nhà"
       },
       {
-        "role":="user",
+        "role":"user",
         "content": "ok\nt sẽ tìm\nlớp vẽ"
       },
       {
