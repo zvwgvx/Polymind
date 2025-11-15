@@ -170,7 +170,7 @@ def main():
 
     # Auto-discover datasets
     print(f"{c.CYAN}{c.BOLD}[AUTO-DISCOVERING DATASETS]{c.RESET}")
-    print(f"{c.GRAY}{'─' * 70}{c.RESET}")
+    print(f"{c.GRAY}{'─' * 60}{c.RESET}")
 
     discovered = discover_datasets()
     multi_turn_datasets = discovered['multi-turn']
@@ -182,7 +182,7 @@ def main():
 
     # Renumber phase
     print(f"{c.CYAN}{c.BOLD}[RENUMBERING & SORTING IDs]{c.RESET}")
-    print(f"{c.GRAY}{'─' * 70}{c.RESET}")
+    print(f"{c.GRAY}{'─' * 60}{c.RESET}")
 
     all_datasets = multi_turn_datasets + single_turn_datasets
     renumbered_count = 0
@@ -210,7 +210,7 @@ def main():
 
     # Process Multi-turn datasets
     print(f"{c.CYAN}{c.BOLD}[MULTI-TURN DATASETS]{c.RESET}")
-    print(f"{c.GRAY}{'─' * 70}{c.RESET}")
+    print(f"{c.GRAY}{'─' * 60}{c.RESET}")
 
     multi_turn_total_tokens = 0
     multi_turn_total_items = 0
@@ -245,7 +245,7 @@ def main():
 
     # Process Single-turn datasets
     print(f"{c.CYAN}{c.BOLD}[SINGLE-TURN DATASETS]{c.RESET}")
-    print(f"{c.GRAY}{'─' * 70}{c.RESET}")
+    print(f"{c.GRAY}{'─' * 60}{c.RESET}")
 
     single_turn_total_tokens = 0
     single_turn_total_items = 0
@@ -352,7 +352,7 @@ def main():
 
     # Print ID mapping summary
     print(f"{c.CYAN}{c.BOLD}[ID MAPPING SUMMARY]{c.RESET}")
-    print(f"{c.GRAY}{'─' * 70}{c.RESET}")
+    print(f"{c.GRAY}{'─' * 60}{c.RESET}")
     for range_info in id_ranges:
         print(f"{c.WHITE}{range_info['name']:40s}{c.RESET} {c.GRAY}→{c.RESET} IDs {c.WHITE}{range_info['start']:04d}{c.RESET}-{c.WHITE}{range_info['end']:04d}{c.RESET}")
     print(f"{c.GRAY}{'█' * 60}{c.RESET}")
